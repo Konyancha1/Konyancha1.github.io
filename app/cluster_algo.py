@@ -19,3 +19,26 @@ def cluster_articles(news_articles):
 
     return clustered_data
 
+
+def cluster_product_images(image_paths, text_descriptions):
+    # Ensure that the number of image paths matches the number of text descriptions
+    if len(image_paths) != len(text_descriptions):
+        raise ValueError("Number of image paths must match the number of text descriptions.")
+
+    # Preprocess text descriptions
+    tfidf_vectorizer = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = tfidf_vectorizer.fit_transform(text_descriptions)
+
+    # K-means clustering
+    num_clusters = 5 
+    kmeans = KMeans(n_clusters=num_clusters)
+    kmeans.fit(tfidf_matrix)
+
+    # Assign each image to its corresponding cluster
+    clustered_images = {}
+    for i, label in enumerate(kmeans.labels_):
+        if label not in clustered_images:
+            clustered_images[label] = []
+        clustered_images[label].append(image_paths[i])
+
+    return clustered_images
